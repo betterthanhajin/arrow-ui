@@ -3,8 +3,8 @@ import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  const rowNumber = 30; // 행의 수
-  const colNumber = 30; // 열의 수
+  const rowNumber = 1; // 행의 수
+  const colNumber = 5; // 열의 수
   const [rotations, setRotations] = useState(
     Array(rowNumber).fill(Array(colNumber).fill(0))
   );
@@ -48,14 +48,8 @@ export default function Home() {
         // 180 아래
         // 270 좌
         const angle =
-          (Math.atan2(
-            -cellCenterY,
-            document.body.clientWidth / 2 - cellCenterX
-          ) *
-            180) /
-          Math.PI;
-        // Math.atan2(mouseY - cellCenterY, mouseX - cellCenterX) *
-        // (180 / Math.PI);
+          Math.atan2(cellCenterY - mouseY, cellCenterX - mouseX) *
+          (180 / Math.PI);
 
         console.log({
           mousex: mouseX,
