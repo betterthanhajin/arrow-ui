@@ -60,7 +60,7 @@ export default function Home() {
         // 거리 계산
         const distance = Math.hypot(mouseX - cellCenterX, mouseY - cellCenterY);
         // 거리에 따른 투명도 계산
-        const opacity = Math.max(0, Math.min(1, 1 - distance / 500));
+        const opacity = Math.max(0, Math.min(1, 1 - distance / 800));
         if (typeof newOpacity[rowIndex] === "undefined")
           newOpacity[rowIndex] = [];
         newOpacity[rowIndex][colIndex] = opacity;
@@ -76,7 +76,7 @@ export default function Home() {
       {Array(rowNumber)
         .fill(0)
         .map((_, rowIndex) => (
-          <div key={rowIndex} className="flex flex-wrap min-w-20 min-h-0">
+          <div key={rowIndex} className="flex flex-wrap min-w-20">
             {Array(colNumber)
               .fill(0)
               .map((_, colIndex) => (
@@ -90,7 +90,7 @@ export default function Home() {
                     }}
                   >
                     <Image
-                      className="object-cover min-w-10"
+                      className="object-cover"
                       src="/arrow-ui.svg"
                       alt="arrow"
                       width={100}
