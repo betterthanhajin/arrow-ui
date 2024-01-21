@@ -8,6 +8,10 @@ export default function Home() {
   const [rotations, setRotations] = useState(
     Array(rowNumber).fill(Array(colNumber).fill(0))
   );
+
+  const [opacity, setOpacity] = useState(
+    Array(rowNumber).fill(Array(colNumber).fill(0))
+  );
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
   const arrowRefs = useRef<HTMLDivElement[]>([]);
@@ -16,8 +20,6 @@ export default function Home() {
     const handleMouseMove = (e: MouseEvent) => {
       setMouseX(e.clientX);
       setMouseY(e.clientY);
-      console.log({ x: e.clientX, y: e.clientY });
-      console.log({ positionRef: arrowRefs.current });
     };
     document.body.addEventListener("mousemove", handleMouseMove);
     return () => {
@@ -36,6 +38,7 @@ export default function Home() {
     // newRotation[rowIndex][colIndex] = angle;
     // setRotations(newRotation);
     const newRotation = [[], []] as number[][];
+    const newOpacity = [[], []] as number[][];
     let rowIndex = 0;
     let colIndex = 0;
     for (rowIndex = 0; rowIndex < rowNumber; rowIndex++) {
@@ -55,11 +58,18 @@ export default function Home() {
         if (typeof newRotation[rowIndex] === "undefined")
           newRotation[rowIndex] = [];
         newRotation[rowIndex][colIndex] = (angle + 360 + 90) % 360;
-      }
 
-      console.log({ newRotation });
+        // 거리 계산
+        const distance = Math.hypot(mouseX - cellCenterX, mouseY - cellCenterY);
+        // 거리에 따른 투명도 계산
+        const opacity = Math.max(0, Math.min(1, 1 - distance / 1500));
+        if (typeof newOpacity[rowIndex] === "undefined")
+          newOpacity[rowIndex] = [];
+        newOpacity[rowIndex][colIndex] = opacity;
+      }
     }
     setRotations(newRotation);
+    setOpacity(newOpacity);
     // 리액트 불변성 배열 할당
   }, [mouseX, mouseY]);
 
@@ -90,6 +100,7 @@ export default function Home() {
                       priority
                       style={{
                         transform: `rotate(${rotations[rowIndex][colIndex]}deg)`,
+                        opacity: opacity[rowIndex][colIndex],
                       }}
                     />
                   </div>
