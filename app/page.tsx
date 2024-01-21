@@ -3,8 +3,8 @@ import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  const rowNumber = 30; // 행의 수
-  const colNumber = 30; // 열의 수
+  const rowNumber = 10; // 행의 수
+  const colNumber = 10; // 열의 수
   const [rotations, setRotations] = useState(
     Array(rowNumber).fill(Array(colNumber).fill(0))
   );
@@ -76,7 +76,7 @@ export default function Home() {
       {Array(rowNumber)
         .fill(0)
         .map((_, rowIndex) => (
-          <div key={rowIndex} className="flex flex-wrap min-w-20">
+          <div key={rowIndex} className="flex flex-wrap min-w-20 min-h-2">
             {Array(colNumber)
               .fill(0)
               .map((_, colIndex) => (
