@@ -3,8 +3,8 @@ import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  const rowNumber = 20; // 행의 수
-  const colNumber = 20; // 열의 수
+  const rowNumber = 30; // 행의 수
+  const colNumber = 30; // 열의 수
   const [rotations, setRotations] = useState(
     Array(rowNumber).fill(Array(colNumber).fill(0))
   );
