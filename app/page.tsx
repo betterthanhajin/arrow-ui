@@ -17,9 +17,14 @@ export default function Home() {
   const arrowRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMouseX(e.clientX);
-      setMouseY(e.clientY);
+    const handleMouseMove = (e: MouseEvent | TouchEvent) => {
+      if (e instanceof MouseEvent) {
+        setMouseX(e.clientX);
+        setMouseY(e.clientY);
+      } else if (e instanceof TouchEvent && e.touches.length > 0) {
+        setMouseX(e.touches[0].clientX);
+        setMouseY(e.touches[0].clientY);
+      }
     };
     document.body.addEventListener("mousemove", handleMouseMove);
     return () => {
@@ -53,7 +58,7 @@ export default function Home() {
         // 거리 계산
         const distance = Math.hypot(mouseX - cellCenterX, mouseY - cellCenterY);
         // 거리에 따른 투명도 계산
-        const opacity = Math.max(0, Math.min(1, 1 - distance / 1500));
+        const opacity = Math.max(0, Math.min(1, 1 - distance / 1000));
         if (typeof newOpacity[rowIndex] === "undefined")
           newOpacity[rowIndex] = [];
         newOpacity[rowIndex][colIndex] = opacity;
@@ -69,7 +74,7 @@ export default function Home() {
       {Array(rowNumber)
         .fill(0)
         .map((_, rowIndex) => (
-          <div key={rowIndex} className="flex flex-wrap min-h-2 min-w-20">
+          <div key={rowIndex} className="flex flex-wrap min-w-20 min-h-0">
             {Array(colNumber)
               .fill(0)
               .map((_, colIndex) => (
@@ -83,7 +88,7 @@ export default function Home() {
                     }}
                   >
                     <Image
-                      className="object-cover"
+                      className="object-cover min-w-10"
                       src="/arrow-ui.svg"
                       alt="arrow"
                       width={100}
