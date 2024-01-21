@@ -28,15 +28,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // let angle;
-    // angle = Math.atan2(mouseY - 50, mouseX - 50) * (180 / Math.PI);
-    // const newRotation = [...rotations];
-    // // rowIndex와 colIndex 계산
-    // const rowIndex = Math.floor(mouseY / (window.innerHeight / rows));
-    // const colIndex = Math.floor(mouseX / (window.innerWidth / cols));
-    // console.log({ rowIndex, colIndex, mouseX, mouseY });
-    // newRotation[rowIndex][colIndex] = angle;
-    // setRotations(newRotation);
     const newRotation = [[], []] as number[][];
     const newOpacity = [[], []] as number[][];
     let rowIndex = 0;
