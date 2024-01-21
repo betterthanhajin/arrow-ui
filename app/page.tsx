@@ -27,8 +27,10 @@ export default function Home() {
       }
     };
     document.body.addEventListener("mousemove", handleMouseMove);
+    document.body.addEventListener("touchmove", handleMouseMove);
     return () => {
       document.body.removeEventListener("mousemove", handleMouseMove);
+      document.body.removeEventListener("touchmove", handleMouseMove);
     };
   }, []);
 
