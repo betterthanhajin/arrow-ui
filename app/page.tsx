@@ -3,8 +3,8 @@ import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  const rowNumber = 1; // 행의 수
-  const colNumber = 5; // 열의 수
+  const rowNumber = 30; // 행의 수
+  const colNumber = 30; // 열의 수
   const [rotations, setRotations] = useState(
     Array(rowNumber).fill(Array(colNumber).fill(0))
   );
@@ -35,34 +35,32 @@ export default function Home() {
     // console.log({ rowIndex, colIndex, mouseX, mouseY });
     // newRotation[rowIndex][colIndex] = angle;
     // setRotations(newRotation);
-    const newRotation = [...rotations];
-    for (let rowIndex = 0; rowIndex < rowNumber; rowIndex++) {
-      for (let colIndex = 0; colIndex < colNumber; colIndex++) {
-        const ref = arrowRefs.current[(rowIndex + 1) * colIndex];
+    const newRotation = [[], []] as number[][];
+    let rowIndex = 0;
+    let colIndex = 0;
+    for (rowIndex = 0; rowIndex < rowNumber; rowIndex++) {
+      for (colIndex = 0; colIndex < colNumber; colIndex++) {
+        const ref = arrowRefs.current[rowIndex * colNumber + colIndex];
         const boundingBox = ref.getBoundingClientRect();
-        const cellCenterX = boundingBox.x + boundingBox.width / 2;
-        const cellCenterY = boundingBox.y + boundingBox.height / 2;
+        const cellCenterX = boundingBox.x;
+        const cellCenterY = boundingBox.y;
         // 앵글
         // 0 위
         // 90 우
         // 180 아래
         // 270 좌
         const angle =
-          Math.atan2(cellCenterY - mouseY, cellCenterX - mouseX) *
+          Math.atan2(mouseY - cellCenterY, mouseX - cellCenterX) *
           (180 / Math.PI);
-
-        console.log({
-          mousex: mouseX,
-          mousey: mouseY,
-          cellCenterY: cellCenterY,
-          cellCenterX: cellCenterX,
-          angle: angle,
-        });
-        // 각도를 0에서 360 사이의 값으로 변환합니다.
-        newRotation[rowIndex][colIndex] = (angle + 360) % 360;
+        if (typeof newRotation[rowIndex] === "undefined")
+          newRotation[rowIndex] = [];
+        newRotation[rowIndex][colIndex] = (angle + 360 + 90) % 360;
       }
+
+      console.log({ newRotation });
     }
     setRotations(newRotation);
+    // 리액트 불변성 배열 할당
   }, [mouseX, mouseY]);
 
   return (
@@ -74,11 +72,12 @@ export default function Home() {
             {Array(colNumber)
               .fill(0)
               .map((_, colIndex) => (
-                <div key={colIndex} className="flex-1">
+                <div key={`${rowIndex}-${colIndex}`} className="flex-1">
                   <div
                     ref={(elem) => {
                       if (elem) {
-                        arrowRefs.current[(rowIndex + 1) * colIndex] = elem;
+                        arrowRefs.current[rowIndex * colNumber + colIndex] =
+                          elem;
                       }
                     }}
                   >
