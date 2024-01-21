@@ -60,7 +60,7 @@ export default function Home() {
         // 거리 계산
         const distance = Math.hypot(mouseX - cellCenterX, mouseY - cellCenterY);
         // 거리에 따른 투명도 계산
-        const opacity = Math.max(0, Math.min(1, 1 - distance / 1000));
+        const opacity = Math.max(0, Math.min(1, 1 - distance / 500));
         if (typeof newOpacity[rowIndex] === "undefined")
           newOpacity[rowIndex] = [];
         newOpacity[rowIndex][colIndex] = opacity;
