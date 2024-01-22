@@ -78,7 +78,7 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
   }, [mouseX, mouseY]);
 
   return (
-    <div>
+    <>
       {Array(rowNumber)
         .fill(0)
         .map((_, rowIndex) => (
@@ -112,7 +112,7 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
               ))}
           </div>
         ))}
-    </div>
+    </>
   );
 };
 
