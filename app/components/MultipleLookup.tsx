@@ -1,4 +1,3 @@
-"use client";
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 
@@ -117,15 +116,17 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
 
   return (
     <>
-      <div className="image-interaction w-full p-12">
-        <div className="filebox">
+      <div className="image-interaction w-full p-4 sm:p-12">
+        <div className="filebox flex justify-center items-center">
           <input
-            className="upload-name"
+            className="upload-name w-full sm:w-auto"
             placeholder="이미지 파일 업로드"
             readOnly
             value={image ? "파일 선택됨" : ""}
           />
-          <label htmlFor="file">Custom</label>
+          <label htmlFor="file" className="sm:mt-0 sm:ml-2">
+            Custom
+          </label>
           <input
             type="file"
             id="file"
@@ -134,16 +135,16 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
           />
         </div>
       </div>
-      <section>
-        <div>
+      <section className="w-full h-full">
+        <div className="inline-block min-w-full">
           {Array(rowNumber)
             .fill(0)
             .map((_, rowIndex) => (
-              <div key={rowIndex} className="flex flex-wrap min-w-20 min-h-2">
+              <div key={rowIndex} className="flex flex-nowrap">
                 {Array(colNumber)
                   .fill(0)
                   .map((_, colIndex) => (
-                    <div key={`${rowIndex}-${colIndex}`} className="flex-1">
+                    <div key={`${rowIndex}-${colIndex}`}>
                       <div
                         ref={(elem) => {
                           if (elem) {
@@ -151,6 +152,7 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
                               elem;
                           }
                         }}
+                        className="w-full h-full"
                       >
                         <Image
                           className="object-cover"
