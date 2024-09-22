@@ -5,11 +5,13 @@ import React, { useState, useEffect, useRef } from "react";
 interface MultipleLookupProps {
   colNumber: number;
   rowNumber: number;
+  initialImage?: string;
 }
 
 const MultipleLookup: React.FC<MultipleLookupProps> = ({
   colNumber,
   rowNumber,
+  initialImage,
 }) => {
   const [rotations, setRotations] = useState(
     Array(rowNumber).fill(Array(colNumber).fill(0))
@@ -21,6 +23,10 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
   const arrowRefs = useRef<HTMLDivElement[]>([]);
+  const [image, setImage] = useState<string | null>(initialImage || null);
+  const [rotation, setRotation] = useState(0);
+  const [scale, setScale] = useState(1);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent | TouchEvent) => {
@@ -77,41 +83,95 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
     // 리액트 불변성 배열 할당
   }, [mouseX, mouseY]);
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => setImage(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (imageRef.current) {
+        const { left, top, width, height } =
+          imageRef.current.getBoundingClientRect();
+        const centerX = left + width / 2;
+        const centerY = top + height / 2;
+
+        // 회전 계산
+        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+        setRotation(angle * (180 / Math.PI));
+
+        // 크기 변화 계산
+        const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+        const maxDistance = Math.max(width, height);
+        setScale(1 + (distance / maxDistance) * 0.5); // 최대 1.5배까지 확대
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   return (
     <>
-      {Array(rowNumber)
-        .fill(0)
-        .map((_, rowIndex) => (
-          <div key={rowIndex} className="flex flex-wrap min-w-20 min-h-2">
-            {Array(colNumber)
-              .fill(0)
-              .map((_, colIndex) => (
-                <div key={`${rowIndex}-${colIndex}`} className="flex-1">
-                  <div
-                    ref={(elem) => {
-                      if (elem) {
-                        arrowRefs.current[rowIndex * colNumber + colIndex] =
-                          elem;
-                      }
-                    }}
-                  >
-                    <Image
-                      className="object-cover"
-                      src="/arrow-ui.svg"
-                      alt="arrow"
-                      width={100}
-                      height={100}
-                      priority
-                      style={{
-                        transform: `rotate(${rotations[rowIndex][colIndex]}deg)`,
-                        opacity: opacity[rowIndex][colIndex],
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-          </div>
-        ))}
+      <div className="image-interaction w-full p-12">
+        <div className="filebox">
+          <input
+            className="upload-name"
+            placeholder="이미지 파일 업로드"
+            readOnly
+            value={image ? "파일 선택됨" : ""}
+          />
+          <label htmlFor="file">Custom</label>
+          <input
+            type="file"
+            id="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+        </div>
+      </div>
+      <section>
+        <div>
+          {Array(rowNumber)
+            .fill(0)
+            .map((_, rowIndex) => (
+              <div key={rowIndex} className="flex flex-wrap min-w-20 min-h-2">
+                {Array(colNumber)
+                  .fill(0)
+                  .map((_, colIndex) => (
+                    <div key={`${rowIndex}-${colIndex}`} className="flex-1">
+                      <div
+                        ref={(elem) => {
+                          if (elem) {
+                            arrowRefs.current[rowIndex * colNumber + colIndex] =
+                              elem;
+                          }
+                        }}
+                      >
+                        <Image
+                          className="object-cover"
+                          src={image ? image : "/arrow-ui.svg"}
+                          alt="arrow"
+                          width={100}
+                          height={100}
+                          priority
+                          style={{
+                            transform: `rotate(${rotations[rowIndex][colIndex]}deg) scale(${scale})`,
+                            opacity: opacity[rowIndex][colIndex],
+                            transition: "transform 0.1s ease-out",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ))}
+        </div>
+      </section>
     </>
   );
 };
