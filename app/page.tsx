@@ -1,5 +1,5 @@
 "use client";
-import MultipleLookup from "./components/MultipleLookup";
+import MultipleLookup from "../components/MultipleLookup";
 
 export default function Home() {
   const rowNumber = 20; // 행의 수

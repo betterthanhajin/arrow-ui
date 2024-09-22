@@ -26,6 +26,36 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
   const [rotation, setRotation] = useState(0);
   const [scale, setScale] = useState(1);
   const imageRef = useRef<HTMLImageElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioLoaded, setAudioLoaded] = useState(false);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = 0.5; // 초기 볼륨 설정
+      audio.load(); // 오디오 로드
+      audio.oncanplaythrough = () => {
+        setAudioLoaded(true);
+        console.log("오디오 로딩 완료");
+      };
+      audio.onerror = (e) => {
+        console.error("오디오 로딩 실패:", e);
+      };
+    }
+  }, []);
+
+  const toggleAudio = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        audio.play().catch((e) => console.error("오디오 재생 실패:", e));
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent | TouchEvent) => {
@@ -91,25 +121,25 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
     }
   };
 
+  const handleMouseMove = (e: MouseEvent) => {
+    if (imageRef.current) {
+      const { left, top, width, height } =
+        imageRef.current.getBoundingClientRect();
+      const centerX = left + width / 2;
+      const centerY = top + height / 2;
+
+      // 회전 계산
+      const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+      setRotation(angle * (180 / Math.PI));
+
+      // 크기 변화 계산
+      const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+      const maxDistance = Math.max(width, height);
+      setScale(1 + (distance / maxDistance) * 0.5); // 최대 1.5배까지 확대
+    }
+  };
+
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (imageRef.current) {
-        const { left, top, width, height } =
-          imageRef.current.getBoundingClientRect();
-        const centerX = left + width / 2;
-        const centerY = top + height / 2;
-
-        // 회전 계산
-        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-        setRotation(angle * (180 / Math.PI));
-
-        // 크기 변화 계산
-        const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
-        const maxDistance = Math.max(width, height);
-        setScale(1 + (distance / maxDistance) * 0.5); // 최대 1.5배까지 확대
-      }
-    };
-
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
@@ -135,6 +165,14 @@ const MultipleLookup: React.FC<MultipleLookupProps> = ({
           />
         </div>
       </div>
+      <audio src="/music/buddy.mp3" ref={audioRef} loop />
+      <button
+        onClick={toggleAudio}
+        className="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded"
+        disabled={!audioLoaded}
+      >
+        {isPlaying ? "음악 중지" : "음악 재생"}
+      </button>
       <section className="w-full h-full">
         <div className="inline-block min-w-full">
           {Array(rowNumber)
